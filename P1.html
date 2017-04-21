@@ -1,0 +1,202 @@
+<html>
+
+    <head>
+              <meta charset="UTF-8"/>
+              <p id="title"> Cadastro de Veículos </p>
+    </head>
+    <style>
+        #title {
+            text-align: center;
+            color: black;
+            font-size: 250%;
+        }
+        label {
+            margin-left:200px;
+            font-size: 150%;
+            color: red;
+        }
+      
+    </style>
+    <form action="javascript:void(0)" onsubmit="app.adicionar()">
+        <input type="text" id="Placa" placeholder="Placa">
+        <input type="text" id="Marca" placeholder="Marca">
+        
+        <input type="text" id="Modelo" placeholder="Modelo">
+        <input type="submit" value="Salvar">
+        <input type="button" value="Cancelar" onclick="app.cancel()">
+        <input type="button" value="Mostrar Todos" onclick="app.mostrarTodos()">
+        
+        <br>    </br>
+        <input type="text" id="PlacaBusca" placeholder="Placa">
+        <input type="button" value="Buscar" onclick="app.buscarPlaca()">
+        
+    </form>
+    <body>
+        <p id="tabela"></p>
+        <table border="1">
+                <tr>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                </tr>
+                <tbody id="veiculos">
+
+                </tbody>    
+        </table>
+        <br>    </br>
+        <b> <label id="saida">  </label> </b>
+
+
+    </body>
+
+       <script>
+            
+               var app= new function(){
+                    this.elVeiculos = document.getElementById("veiculos");
+                    this.veiculos=[];
+                    this.editar =-1;
+                    this.id=1;
+
+                    //contando quantos veiculos estão cadastrados
+                    this.contar = function (qtd){
+                        var elContador = document.getElementById("tabela");
+                        var nome="Veiculo";
+                        if (qtd){
+                            if (qtd>1){
+                                nome="Veiculos";
+                            }
+                           elContador.innerHTML=qtd + ' '+ nome;
+                            
+                        } else{
+                            elContador.innerHTML="Sem "+ nome;
+                        }
+                    } ;
+
+                    //função para listar na tabela os veiculos que estão no vetor
+                    this.listarTabela = function(){
+                        
+                        var dados = '';
+                        for (i=0;i<this.veiculos.length;i++){
+                            dados+='<tr>';
+                            dados+='<td>'+this.veiculos[i].Placa+'</td>';
+                            dados+='<td>'+this.veiculos[i].Marca+'</td>';
+                            dados+='<td>'+this.veiculos[i].Modelo+'</td>';
+                            dados+='<td><button onclick="app.excluir('+i+')">excluir</button></td>';
+                            dados+='<td><button onclick="app.alterar('+i+')">alterar</button></td>';
+                          
+                            dados+="</tr>";
+                        }
+                        
+                        this.contar(this.veiculos.length);
+                        
+                        this.elVeiculos.innerHTML= dados;
+                    };
+
+                    //função para adicionar elementos no vetor
+                   this.adicionar=function(){
+                        var elPlaca = document.getElementById("Placa");
+                        var elMarca = document.getElementById("Marca");
+                        var elModelo = document.getElementById("Modelo");
+                        var elementos =  {ID:this.id,Placa:elPlaca.value,Marca:elMarca.value,Modelo:elModelo.value};
+                        var resp = document.getElementById("saida");
+
+                        if(elPlaca.value == "" || elMarca.value == "" || elModelo.value == ""){
+                            resp.innerText = "Existe espaços em branco!";
+                        }
+                        
+                            else if(elementos){  
+
+                                if(this.editar==-1){
+                                        //inserindo no vetor
+                                        elementos.ID = this.id++;
+                                        this.veiculos.push(elementos);
+                                        resp.innerText = "Veiculo cadastrado com sucesso!";
+                                    }else {
+                                        //Altera quando tem alguem para alterar
+                                        elementos.ID = this.veiculos[this.editar].ID;
+                                        this.veiculos.splice(this.editar, 1 , elementos);  
+                                        this.itemEditar=-1;
+                                        resp.innerText = "Veiculo alterado com sucesso!";
+                                    }
+                                
+                            }
+                        this.cancel();      
+                        this.listarTabela();
+                        
+                        
+                   }
+                   //excuir veiculo do vetor
+                   this.excluir= function(indice){
+                        //pegando o indice do elemento que quer exculir                       
+                        this.veiculos.splice(indice, 1);
+                        this.listarTabela();
+                        var resp = document.getElementById("saida");
+                        resp.innerText = "Veiculo excluido com sucesso!";
+                    }
+                    
+                    this.cancel = function(){
+                        this.editar = -1;
+                        var elPlaca = document.getElementById("Placa");
+                        var elMarca = document.getElementById("Marca");
+                        var elModelo = document.getElementById("Modelo");
+                        elPlaca.value="";
+                        elMarca.value="";
+                        elModelo.value="";
+                    }
+
+                    this.alterar = function(indice){
+                        this.editar = indice;
+                        var placa = this.veiculos[indice].Placa;
+                        var marca = this.veiculos[indice].Marca;
+                        var model = this.veiculos[indice].Modelo;
+
+                         if(placa){
+                            //Acessando o elemento no DOM  
+                            var elPlaca = document.getElementById("Placa");
+                            var elMarca = document.getElementById("Marca");
+                            var elModelo = document.getElementById("Modelo");
+                            //preenchendo o form
+                            elPlaca.value=placa;
+                            elMarca.value=marca;
+                            elModelo.value=model;
+                        }
+                        
+                    }
+
+                    this.buscarPlaca =function(){
+                        var placaBusc = document.getElementById("PlacaBusca");
+                        var resp = document.getElementById("saida");
+
+                        if(placaBusc.value == ""){
+                            resp.innerText = "Preencha o campo Placa!";
+                        } else{
+                            //percorrendo o vetor e procurando a placa 
+                            for(i=0; i<this.veiculos.length; i++){
+                                if (placaBusc.value == this.veiculos[i].Placa){
+                                    var achou="";
+                                    achou+='<td>'+this.veiculos[i].Placa+'</td>';
+                                    achou+='<td>'+this.veiculos[i].Marca+'</td>';
+                                    achou+='<td>'+this.veiculos[i].Modelo+'</td>';
+                                    achou+='<td><button onclick="app.excluir('+i+')">excluir</button></td>';
+                                    achou+='<td><button onclick="app.alterar('+i+')">alterar</button></td>';
+                                    this.elVeiculos.innerHTML= achou;                           
+                                    resp.innerText = "Veiculo encontrado!";
+                                    break;
+                                } else {
+                                    resp.innerText = "Veiculo nao encontrado!";
+                                    this.elVeiculos.innerHTML= "";
+                                }
+                            }
+                        }
+                        
+                    }
+
+                    //listar todos os itens do vetor
+                    this.mostrarTodos = function(){                        
+                        this.listarTabela();                        
+                    }
+                };
+             app.listarTabela();
+        </script>
+
+</html>
