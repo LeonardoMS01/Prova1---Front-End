@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 
     <head>
               <meta charset="UTF-8"/>
@@ -10,11 +10,6 @@
             color: black;
             font-size: 250%;
         }
-        label {
-            margin-left:200px;
-            font-size: 150%;
-            color: red;
-        }
       
     </style>
     <form action="javascript:void(0)" onsubmit="app.adicionar()">
@@ -24,7 +19,7 @@
         <input type="text" id="Modelo" placeholder="Modelo">
         <input type="submit" value="Salvar">
         <input type="button" value="Cancelar" onclick="app.cancel()">
-        <input type="button" value="Mostrar Todos" onclick="app.mostrarTodos()">
+        <input type="button" value="Mostrar Todos" onclick="app.listarTabela()">
         
         <br>    </br>
         <input type="text" id="PlacaBusca" placeholder="Placa">
@@ -43,8 +38,7 @@
 
                 </tbody>    
         </table>
-        <br>    </br>
-        <b> <label id="saida">  </label> </b>
+        
 
 
     </body>
@@ -97,26 +91,24 @@
                         var elPlaca = document.getElementById("Placa");
                         var elMarca = document.getElementById("Marca");
                         var elModelo = document.getElementById("Modelo");
-                        var elementos =  {ID:this.id,Placa:elPlaca.value,Marca:elMarca.value,Modelo:elModelo.value};
+                        var elementos =  {ID:this.id++,Placa:elPlaca.value,Marca:elMarca.value,Modelo:elModelo.value};
                         var resp = document.getElementById("saida");
 
                         if(elPlaca.value == "" || elMarca.value == "" || elModelo.value == ""){
-                            resp.innerText = "Existe espaços em branco!";
+                            window.alert("Preencha os espaços em branco!");
                         }
                         
                             else if(elementos){  
 
                                 if(this.editar==-1){
                                         //inserindo no vetor
-                                        elementos.ID = this.id++;
                                         this.veiculos.push(elementos);
-                                        resp.innerText = "Veiculo cadastrado com sucesso!";
+                                        window.alert("Veículo cadastrado!")
                                     }else {
                                         //Altera quando tem alguem para alterar
-                                        elementos.ID = this.veiculos[this.editar].ID;
                                         this.veiculos.splice(this.editar, 1 , elementos);  
                                         this.itemEditar=-1;
-                                        resp.innerText = "Veiculo alterado com sucesso!";
+                                        window.alert("Veículo Alterado!")
                                     }
                                 
                             }
@@ -131,7 +123,7 @@
                         this.veiculos.splice(indice, 1);
                         this.listarTabela();
                         var resp = document.getElementById("saida");
-                        resp.innerText = "Veiculo excluido com sucesso!";
+                        window.alert("Veículo Excluído!")
                     }
                     
                     this.cancel = function(){
@@ -160,7 +152,6 @@
                             elMarca.value=marca;
                             elModelo.value=model;
                         }
-                        
                     }
 
                     this.buscarPlaca =function(){
@@ -168,7 +159,7 @@
                         var resp = document.getElementById("saida");
 
                         if(placaBusc.value == ""){
-                            resp.innerText = "Preencha o campo Placa!";
+                            window.alert("Informe a placa!");
                         } else{
                             //percorrendo o vetor e procurando a placa 
                             for(i=0; i<this.veiculos.length; i++){
@@ -180,21 +171,17 @@
                                     achou+='<td><button onclick="app.excluir('+i+')">excluir</button></td>';
                                     achou+='<td><button onclick="app.alterar('+i+')">alterar</button></td>';
                                     this.elVeiculos.innerHTML= achou;                           
-                                    resp.innerText = "Veiculo encontrado!";
+                                    window.alert("Veículo Encontrado!");
                                     break;
-                                } else {
-                                    resp.innerText = "Veiculo nao encontrado!";
+                                } else if(i == (this.veiculos.length-1)){
                                     this.elVeiculos.innerHTML= "";
+                                    window.alert("Veículo não Encontrado!");
                                 }
                             }
                         }
                         
                     }
-
-                    //listar todos os itens do vetor
-                    this.mostrarTodos = function(){                        
-                        this.listarTabela();                        
-                    }
+                   
                 };
              app.listarTabela();
         </script>
